@@ -93,6 +93,30 @@ export async function POST(request: Request) {
           restaurantId: menuItem.restaurantId
         }
       });
+    } else {
+      // Check for multi-restaurant conflict
+      const cartItemsCount = await prisma.cartItem.count({ where: { cartId: cart.id } });
+      if (cartItemsCount > 0 && cart.restaurantId && cart.restaurantId !== menuItem.restaurantId) {
+        if (body.clearCart) {
+          await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
+          await prisma.cart.update({
+            where: { id: cart.id },
+            data: { restaurantId: menuItem.restaurantId }
+          });
+        } else {
+          const currentRest = await prisma.restaurant.findUnique({ where: { id: cart.restaurantId } });
+          return NextResponse.json({
+            conflict: true,
+            currentRestaurantName: currentRest?.name || "another restaurant",
+            message: `Your basket contains items from "${currentRest?.name || "another restaurant"}". Do you want to discard them and start a new order?`
+          }, { status: 409 });
+        }
+      } else if (!cart.restaurantId) {
+        await prisma.cart.update({
+          where: { id: cart.id },
+          data: { restaurantId: menuItem.restaurantId }
+        });
+      }
     }
 
     // Check if item already in cart

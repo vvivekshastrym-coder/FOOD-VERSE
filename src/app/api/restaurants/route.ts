@@ -6,18 +6,21 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const cuisine = searchParams.get("cuisine");
     const query = searchParams.get("q");
-    const sortBy = searchParams.get("sort") || "honest_ranking"; // honest_ranking, rating, prep_time, hygiene
+    const sortBy = searchParams.get("sort") || "honest_ranking"; // honest_ranking, rating, prep_time, hygiene, price_asc, price_desc
     const vegOnly = searchParams.get("veg") === "true";
+    const minRating = searchParams.get("minRating") ? parseFloat(searchParams.get("minRating")!) : undefined;
 
     const restaurants = await prisma.restaurant.findMany({
       where: {
         isOpen: true,
-        ...(cuisine ? { cuisineType: { contains: cuisine } } : {}),
+        ...(cuisine && cuisine !== "ALL" ? { cuisineType: { contains: cuisine } } : {}),
+        ...(minRating ? { rating: { gte: minRating } } : {}),
         ...(query ? {
           OR: [
             { name: { contains: query } },
             { description: { contains: query } },
-            { cuisineType: { contains: query } }
+            { cuisineType: { contains: query } },
+            { menuItems: { some: { name: { contains: query } } } }
           ]
         } : {})
       },
@@ -29,7 +32,7 @@ export async function GET(request: Request) {
             assets: true,
             portionVariants: true
           },
-          take: 4
+          take: 8
         },
         antiWasteDeals: {
           where: { isActive: true },
@@ -52,6 +55,10 @@ export async function GET(request: Request) {
         (ratingNormalized * 0.40 + hygieneNormalized * 0.30 + speedScore * 0.20 + verifiedRatio * 0.10) * 100
       );
 
+      const avgDishPrice = r.menuItems.length > 0
+        ? r.menuItems.reduce((acc, item) => acc + item.price, 0) / r.menuItems.length
+        : 250;
+
       const rankingExplanation = [
         `${r.hygieneRating}/5.0 Hygiene Audit`,
         `${r.avgPreparationTime}m Avg Prep`,
@@ -62,12 +69,13 @@ export async function GET(request: Request) {
       return {
         ...r,
         honestScore,
+        avgDishPrice: Math.round(avgDishPrice),
         rankingExplanation,
         verifiedDishesCount
       };
     });
 
-    // If sorting by honest ranking, sort by score descending, but keep sponsored clearly flagged
+    // Sorting options
     if (sortBy === "honest_ranking") {
       rankedRestaurants.sort((a, b) => b.honestScore - a.honestScore);
     } else if (sortBy === "rating") {
@@ -76,6 +84,10 @@ export async function GET(request: Request) {
       rankedRestaurants.sort((a, b) => a.avgPreparationTime - b.avgPreparationTime);
     } else if (sortBy === "hygiene") {
       rankedRestaurants.sort((a, b) => b.hygieneRating - a.hygieneRating);
+    } else if (sortBy === "price_asc") {
+      rankedRestaurants.sort((a, b) => a.avgDishPrice - b.avgDishPrice);
+    } else if (sortBy === "price_desc") {
+      rankedRestaurants.sort((a, b) => b.avgDishPrice - a.avgDishPrice);
     }
 
     return NextResponse.json({

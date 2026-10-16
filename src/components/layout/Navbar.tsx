@@ -16,7 +16,12 @@ import {
   Layers,
   Bike,
   Store,
-  UserCheck
+  UserCheck,
+  Tag,
+  Search,
+  User as UserIcon,
+  Menu,
+  X
 } from "lucide-react";
 
 export default function Navbar() {
@@ -25,6 +30,7 @@ export default function Navbar() {
   const [currentLocation, setCurrentLocation] = useState("Indiranagar, Bengaluru");
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Fetch current user and cart items
   const fetchSession = async () => {
@@ -35,7 +41,9 @@ export default function Navbar() {
 
       const cartRes = await fetch("/api/cart");
       const cartData = await cartRes.json();
-      if (cartData.items) setCartCount(cartData.items.reduce((s: number, i: any) => s + i.quantity, 0));
+      if (cartData.items) {
+        setCartCount(cartData.items.reduce((s: number, i: any) => s + i.quantity, 0));
+      }
     } catch {
       // Fallback
     }
@@ -67,11 +75,11 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-slate-950/85 backdrop-blur-md border-b border-slate-800/80">
+    <header className="sticky top-0 z-50 w-full bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo & Slogan */}
-          <div className="flex items-center space-x-6">
+          {/* Logo & Tagline */}
+          <div className="flex items-center space-x-5">
             <Link href="/" className="flex items-center space-x-2.5 group">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 p-0.5 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition">
                 <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
@@ -84,14 +92,14 @@ export default function Navbar() {
                   <span className="text-amber-400">Verse</span>
                 </span>
                 <span className="text-[10px] text-slate-400 hidden sm:block -mt-1 font-medium">
-                  See your food before you order it
+                  Good food. Better choices.
                 </span>
               </div>
             </Link>
 
             {/* Location Selector */}
-            <div className="hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs text-slate-300 hover:border-slate-700 transition">
-              <MapPin className="w-3.5 h-3.5 text-amber-400" />
+            <div className="hidden xl:flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-xs text-slate-300 hover:border-slate-700 transition">
+              <MapPin className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
               <select
                 value={currentLocation}
                 onChange={(e) => setCurrentLocation(e.target.value)}
@@ -106,26 +114,35 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Navigation Links */}
+          {/* Primary Navigation Links */}
           <nav className="hidden lg:flex items-center space-x-1 text-xs font-semibold">
             <Link
-              href="/food-street"
-              className={`px-3 py-2 rounded-lg transition flex items-center space-x-1.5 ${
-                pathname === "/food-street" ? "bg-amber-500/10 text-amber-400 font-bold" : "text-slate-300 hover:text-white hover:bg-slate-900"
+              href="/"
+              className={`px-3 py-2 rounded-lg transition ${
+                pathname === "/" ? "bg-amber-500/10 text-amber-400 font-bold" : "text-slate-300 hover:text-white hover:bg-slate-900"
               }`}
             >
-              <Compass className="w-4 h-4 text-amber-400" />
-              <span>3D Street</span>
+              Home
             </Link>
 
             <Link
-              href="/food-builder"
+              href="/explore"
               className={`px-3 py-2 rounded-lg transition flex items-center space-x-1.5 ${
-                pathname === "/food-builder" ? "bg-emerald-500/10 text-emerald-400 font-bold" : "text-slate-300 hover:text-white hover:bg-slate-900"
+                pathname === "/explore" ? "bg-amber-500/10 text-amber-400 font-bold" : "text-slate-300 hover:text-white hover:bg-slate-900"
               }`}
             >
-              <Layers className="w-4 h-4 text-emerald-400" />
-              <span>3D Builder</span>
+              <Search className="w-3.5 h-3.5 text-amber-400" />
+              <span>Explore</span>
+            </Link>
+
+            <Link
+              href="/offers"
+              className={`px-3 py-2 rounded-lg transition flex items-center space-x-1.5 ${
+                pathname === "/offers" ? "bg-emerald-500/10 text-emerald-400 font-bold" : "text-slate-300 hover:text-white hover:bg-slate-900"
+              }`}
+            >
+              <Tag className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Offers</span>
             </Link>
 
             <Link
@@ -134,47 +151,88 @@ export default function Navbar() {
                 pathname.startsWith("/food-room") ? "bg-indigo-500/10 text-indigo-400 font-bold" : "text-slate-300 hover:text-white hover:bg-slate-900"
               }`}
             >
-              <Users className="w-4 h-4 text-indigo-400" />
+              <Users className="w-3.5 h-3.5 text-indigo-400" />
               <span>Food Room</span>
             </Link>
 
             <Link
-              href="/flavor-dna"
-              className={`px-3 py-2 rounded-lg transition flex items-center space-x-1.5 ${
-                pathname === "/flavor-dna" ? "bg-rose-500/10 text-rose-400 font-bold" : "text-slate-300 hover:text-white hover:bg-slate-900"
+              href="/orders"
+              className={`px-3 py-2 rounded-lg transition ${
+                pathname === "/orders" ? "bg-sky-500/10 text-sky-400 font-bold" : "text-slate-300 hover:text-white hover:bg-slate-900"
               }`}
             >
-              <Dna className="w-4 h-4 text-rose-400" />
+              My Orders
+            </Link>
+
+            {/* 3D Features Dropdown / Links */}
+            <Link
+              href="/food-street"
+              className={`px-2.5 py-2 rounded-lg transition flex items-center space-x-1 ${
+                pathname === "/food-street" ? "bg-amber-500/10 text-amber-400 font-bold" : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+              }`}
+              title="Interactive 3D Food Street"
+            >
+              <Compass className="w-3.5 h-3.5 text-amber-400" />
+              <span>Street</span>
+            </Link>
+
+            <Link
+              href="/food-builder"
+              className={`px-2.5 py-2 rounded-lg transition flex items-center space-x-1 ${
+                pathname === "/food-builder" ? "bg-emerald-500/10 text-emerald-400 font-bold" : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+              }`}
+              title="Custom 3D Food Builder"
+            >
+              <Layers className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Builder</span>
+            </Link>
+
+            <Link
+              href="/flavor-dna"
+              className={`px-2.5 py-2 rounded-lg transition flex items-center space-x-1 ${
+                pathname === "/flavor-dna" ? "bg-rose-500/10 text-rose-400 font-bold" : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+              }`}
+              title="6-Axis Taste Profile"
+            >
+              <Dna className="w-3.5 h-3.5 text-rose-400" />
               <span>Flavor DNA</span>
             </Link>
 
             <Link
               href="/ai-companion"
-              className={`px-3 py-2 rounded-lg transition flex items-center space-x-1.5 ${
-                pathname === "/ai-companion" ? "bg-purple-500/10 text-purple-400 font-bold" : "text-slate-300 hover:text-white hover:bg-slate-900"
+              className={`px-2.5 py-2 rounded-lg transition flex items-center space-x-1 ${
+                pathname === "/ai-companion" ? "bg-purple-500/10 text-purple-400 font-bold" : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
               }`}
+              title="AI Food Companion"
             >
-              <Bot className="w-4 h-4 text-purple-400" />
-              <span>AI Companion</span>
-            </Link>
-
-            <Link
-              href="/orders"
-              className={`px-3 py-2 rounded-lg transition flex items-center space-x-1.5 ${
-                pathname === "/orders" ? "bg-sky-500/10 text-sky-400 font-bold" : "text-slate-300 hover:text-white hover:bg-slate-900"
-              }`}
-            >
-              <span>Track Orders</span>
+              <Bot className="w-3.5 h-3.5 text-purple-400" />
+              <span>AI</span>
             </Link>
           </nav>
 
           {/* Right Action Buttons & Role Switcher */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2.5">
+            {/* Profile / Login Link */}
+            <Link
+              href={currentUser ? "/profile" : "/login"}
+              className={`p-2 rounded-xl border transition flex items-center space-x-1.5 text-xs font-semibold ${
+                pathname === "/profile" || pathname === "/login"
+                  ? "bg-amber-500/15 border-amber-500/40 text-amber-400"
+                  : "bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700"
+              }`}
+              title={currentUser ? "User Profile" : "Sign In"}
+            >
+              <UserIcon className="w-4 h-4 text-amber-400" />
+              <span className="hidden sm:inline">
+                {currentUser?.name ? currentUser.name.split(" ")[0] : "Sign In"}
+              </span>
+            </Link>
+
             {/* Multi-Role Switcher Pill for paired testing */}
             <div className="relative">
               <button
                 onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs font-medium text-slate-200 transition"
+                className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs font-medium text-slate-200 transition"
                 title="Switch active user role"
               >
                 <UserCheck className="w-3.5 h-3.5 text-amber-400" />
@@ -185,7 +243,7 @@ export default function Navbar() {
               </button>
 
               {isRoleDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-64 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl p-2 z-50 animate-in fade-in">
+                <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl p-2 z-50 animate-in fade-in">
                   <div className="px-2 py-1.5 border-b border-slate-800 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                     Fast Role Switcher
                   </div>
@@ -263,11 +321,11 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Cart Button with Live Item Badge */}
+            {/* Cart Button with Live Count Badge */}
             <Link
               href="/cart"
               className="relative p-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition flex items-center space-x-1 shadow-lg shadow-amber-500/20"
-              title="View Cart"
+              title="View Shopping Cart"
             >
               <ShoppingBag className="w-4 h-4" />
               {cartCount > 0 && (
@@ -276,9 +334,95 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
+
+            {/* Mobile Menu Toggle Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 lg:hidden"
+            >
+              {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Mobile Drawer Menu */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden bg-slate-950 border-b border-slate-800 px-4 py-4 space-y-2">
+          <Link
+            href="/"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-900"
+          >
+            Home
+          </Link>
+          <Link
+            href="/explore"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-900"
+          >
+            Explore Restaurants
+          </Link>
+          <Link
+            href="/offers"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-900"
+          >
+            Offers & Deals
+          </Link>
+          <Link
+            href="/food-room"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-900"
+          >
+            Food Room (Group)
+          </Link>
+          <Link
+            href="/orders"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-900"
+          >
+            My Orders
+          </Link>
+          <Link
+            href="/profile"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-900"
+          >
+            My Profile & Addresses
+          </Link>
+          <div className="pt-2 border-t border-slate-800 grid grid-cols-2 gap-2 text-xs">
+            <Link
+              href="/food-street"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="p-2 rounded-lg bg-slate-900 text-center font-bold text-amber-400"
+            >
+              3D Street
+            </Link>
+            <Link
+              href="/food-builder"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="p-2 rounded-lg bg-slate-900 text-center font-bold text-emerald-400"
+            >
+              3D Builder
+            </Link>
+            <Link
+              href="/flavor-dna"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="p-2 rounded-lg bg-slate-900 text-center font-bold text-rose-400"
+            >
+              Flavor DNA
+            </Link>
+            <Link
+              href="/ai-companion"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="p-2 rounded-lg bg-slate-900 text-center font-bold text-purple-400"
+            >
+              AI Companion
+            </Link>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

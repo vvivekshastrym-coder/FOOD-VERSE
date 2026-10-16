@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Compass,
   Layers,
@@ -17,16 +18,22 @@ import {
   AlertCircle,
   Eye,
   ShoppingBag,
-  Zap
+  Zap,
+  Search,
+  MapPin,
+  Tag
 } from "lucide-react";
 import Dish3DViewer from "@/components/3d/Dish3DViewer";
 
 export default function HomePage() {
+  const router = useRouter();
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const [antiWasteDeals, setAntiWasteDeals] = useState<any[]>([]);
   const [creatorMenus, setCreatorMenus] = useState<any[]>([]);
   const [featuredDish, setFeaturedDish] = useState<any>(null);
   const [selectedCuisine, setSelectedCuisine] = useState<string>("ALL");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [deliveryLocation, setDeliveryLocation] = useState("Indiranagar, Bengaluru");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -59,6 +66,15 @@ export default function HomePage() {
     loadData();
   }, []);
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/explore?q=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      router.push("/explore");
+    }
+  };
+
   const handleQuickAddToCart = async (menuItemId: string) => {
     try {
       const res = await fetch("/api/cart", {
@@ -69,6 +85,8 @@ export default function HomePage() {
       const data = await res.json();
       if (data.success) {
         window.location.href = "/cart";
+      } else if (res.status === 409) {
+        alert(`${data.error}. Go to cart to complete or clear.`);
       }
     } catch {
       // Fallback
@@ -77,45 +95,93 @@ export default function HomePage() {
 
   const CUISINES = ["ALL", "Biryani", "North Indian", "Japanese", "Healthy", "Pizza"];
 
+  const LOCATIONS = [
+    "Indiranagar, Bengaluru",
+    "Koramangala, Bengaluru",
+    "Lavelle Road, Bengaluru",
+    "HSR Layout, Bengaluru"
+  ];
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 pb-20 selection:bg-amber-500 selection:text-slate-950">
-      {/* Hero Section with Signature Promise */}
+      {/* Hero Section with Official Prompt Headline */}
       <section className="relative overflow-hidden pt-12 pb-16 lg:pt-20 lg:pb-24 border-b border-slate-900 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(217,119,6,0.15),rgba(255,255,255,0))]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>India&apos;s First 3D Food Ordering Marketplace</span>
+                <span>Good food. Better choices.</span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1]">
-                See your food <br />
+                Your favourite food, <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400">
-                  before you order it.
+                  delivered.
                 </span>
               </h1>
 
               <p className="text-lg text-slate-300 max-w-xl font-normal leading-relaxed">
-                Know what you are ordering. Understand what you are paying. Follow your food from kitchen to door with true-size verified serving dimensions and honest ranking.
+                See your food before you order it. Inspect true-size portion dimensions in 3D, explore honest un-bought restaurant ratings, and track live kitchen-to-door preparation.
               </p>
+
+              {/* Delivery Location & Search Bar */}
+              <div className="pt-2 max-w-xl space-y-3">
+                <div className="flex flex-col sm:flex-row gap-2">
+                  {/* Location Selector */}
+                  <div className="flex items-center space-x-2 px-3.5 py-3 rounded-2xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300 flex-shrink-0">
+                    <MapPin className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                    <select
+                      value={deliveryLocation}
+                      onChange={(e) => setDeliveryLocation(e.target.value)}
+                      className="bg-transparent border-none text-xs text-white focus:outline-none cursor-pointer"
+                    >
+                      {LOCATIONS.map((loc) => (
+                        <option key={loc} value={loc} className="bg-slate-900 text-white">
+                          {loc}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Search Bar Input */}
+                  <form onSubmit={handleSearchSubmit} className="relative flex-1">
+                    <div className="relative flex items-center">
+                      <Search className="w-4 h-4 text-slate-400 absolute left-4" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search biryani, ramen, kebab..."
+                        className="w-full pl-11 pr-24 py-3 rounded-2xl bg-slate-900/90 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition shadow-inner"
+                      />
+                      <button
+                        type="submit"
+                        className="absolute right-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition"
+                      >
+                        Search
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
 
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <Link
-                  href="/food-street"
+                  href="/explore"
                   className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-sm flex items-center space-x-2 transition shadow-xl shadow-amber-500/20"
                 >
-                  <Compass className="w-4 h-4" />
-                  <span>Enter 3D Food Street</span>
+                  <Search className="w-4 h-4" />
+                  <span>Explore Restaurants</span>
                 </Link>
 
                 <Link
-                  href="/food-builder"
-                  className="px-6 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-semibold text-sm flex items-center space-x-2 transition"
+                  href="/food-street"
+                  className="px-5 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-semibold text-sm flex items-center space-x-2 transition"
                 >
-                  <Layers className="w-4 h-4 text-emerald-400" />
-                  <span>3D Food Builder</span>
+                  <Compass className="w-4 h-4 text-amber-400" />
+                  <span>3D Food Street</span>
                 </Link>
 
                 <Link
@@ -212,6 +278,12 @@ export default function HomePage() {
                   </button>
                 </div>
               ))}
+              <Link
+                href="/offers"
+                className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold px-2"
+              >
+                All Offers →
+              </Link>
             </div>
           </div>
         </section>
@@ -248,6 +320,12 @@ export default function HomePage() {
                 {c}
               </button>
             ))}
+            <Link
+              href="/explore"
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-amber-400 transition"
+            >
+              More Filters →
+            </Link>
           </div>
         </div>
 
