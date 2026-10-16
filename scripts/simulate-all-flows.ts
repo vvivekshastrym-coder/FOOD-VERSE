@@ -183,11 +183,15 @@ async function runAllSimulations() {
     });
 
     // Reload with items
-    room = await prisma.foodRoom.findUnique({
+    const reloaded = await prisma.foodRoom.findUnique({
       where: { code: "FDV-8941" },
       include: { members: true, items: { include: { votes: true } }, host: true, restaurant: true }
-    }) as any;
+    });
+    if (!reloaded) throw new Error("Room missing");
+    room = reloaded;
   }
+
+  if (!room) throw new Error("Room missing");
 
   console.log(`\n👥 2.1 Room Status: Code: ${room.code}`);
   console.log(`   • Host:        ${room.host.name}`);

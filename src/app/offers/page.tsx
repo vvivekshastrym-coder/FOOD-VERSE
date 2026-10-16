@@ -254,7 +254,7 @@ export default function OffersPage() {
                           href={`/dish/${deal.menuItemId}`}
                           className="text-[11px] text-slate-400 hover:text-white underline underline-offset-2"
                         >
-                          Inspect 3D
+                          Inspect Portion
                         </Link>
 
                         <button

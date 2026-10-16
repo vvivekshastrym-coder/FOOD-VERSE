@@ -122,7 +122,7 @@ export default function HomePage() {
               </h1>
 
               <p className="text-lg text-slate-300 max-w-xl font-normal leading-relaxed">
-                See your food before you order it. Inspect true-size portion dimensions in 3D, explore honest un-bought restaurant ratings, and track live kitchen-to-door preparation.
+                See your food before you order it. Inspect verified true-size portion dimensions, genuine studio photography, explore honest un-bought restaurant ratings, and track live kitchen preparation.
               </p>
 
               {/* Delivery Location & Search Bar */}
@@ -218,19 +218,19 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Interactive 3D Dish Hero Spotlight */}
+            {/* Featured Dish Inspection Spotlight */}
             <div className="lg:col-span-5">
               {featuredDish ? (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-xs px-1">
-                    <span className="font-bold text-slate-300">Featured 3D Dish Inspection:</span>
+                    <span className="font-bold text-slate-300">Featured Dish Inspection:</span>
                     <span className="text-amber-400 font-semibold">{featuredDish.name}</span>
                   </div>
                   <Dish3DViewer dish={featuredDish} />
                 </div>
               ) : (
                 <div className="h-[400px] rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500">
-                  Loading 3D Visual Assets...
+                  Loading Verified Dish Photos...
                 </div>
               )}
             </div>
@@ -385,7 +385,7 @@ export default function HomePage() {
 
                     {/* Menu items preview */}
                     <div className="pt-2 border-t border-slate-800/80">
-                      <span className="text-[11px] font-semibold text-slate-400 block mb-2">Available 3D Dishes:</span>
+                      <span className="text-[11px] font-semibold text-slate-400 block mb-2">Available Signature Dishes:</span>
                       <div className="grid grid-cols-2 gap-2">
                         {rest.menuItems?.slice(0, 2).map((item: any) => (
                           <div
@@ -399,7 +399,7 @@ export default function HomePage() {
                             <Link
                               href={`/dish/${item.id}`}
                               className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"
-                              title="Inspect in 3D"
+                              title="Inspect Portion"
                             >
                               <Eye className="w-3.5 h-3.5" />
                             </Link>
@@ -417,7 +417,7 @@ export default function HomePage() {
                     href={`/restaurant/${rest.slug}`}
                     className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition"
                   >
-                    <span>View Menu & 3D Dishes</span>
+                    <span>View Menu & Dishes</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
@@ -454,7 +454,7 @@ export default function HomePage() {
                     href={`/dish/${itemRel.menuItem.id}`}
                     className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium"
                   >
-                    View in 3D
+                    View Dish
                   </Link>
                 </div>
               ))}

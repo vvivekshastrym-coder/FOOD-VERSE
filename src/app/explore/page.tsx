@@ -322,7 +322,7 @@ function ExploreContent() {
                     {rest.menuItems && rest.menuItems.length > 0 && (
                       <div>
                         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
-                          Available 3D Dishes ({rest.menuItems.length})
+                          Available Signature Dishes ({rest.menuItems.length})
                         </span>
                         <div className="grid grid-cols-2 gap-2">
                           {rest.menuItems.slice(0, 2).map((item: any) => (
@@ -340,7 +340,7 @@ function ExploreContent() {
                               <Link
                                 href={`/dish/${item.id}`}
                                 className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex-shrink-0"
-                                title="Inspect 3D True-Size"
+                                title="Inspect Verified Portion"
                               >
                                 <Eye className="w-3.5 h-3.5 text-amber-400" />
                               </Link>
@@ -361,7 +361,7 @@ function ExploreContent() {
                     href={`/restaurant/${rest.slug}`}
                     className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition shadow-md shadow-amber-500/20"
                   >
-                    <span>View Menu & 3D Dishes</span>
+                    <span>View Menu & Dishes</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>

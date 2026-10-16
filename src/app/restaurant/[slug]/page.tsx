@@ -69,7 +69,7 @@ function RestaurantContent() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">
-        Loading Restaurant & 3D Assets...
+        Loading Restaurant Menu...
       </div>
     );
   }
@@ -212,13 +212,13 @@ function RestaurantContent() {
                             )}
                             {item.trueSizeVerified && (
                               <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold border border-emerald-500/30">
-                                3D Verified
+                                Verified Portion
                               </span>
                             )}
                           </div>
                         </div>
 
-                        {/* Image / 3D Trigger */}
+                        {/* Image / View Trigger */}
                         <div className="relative w-28 h-28 rounded-xl overflow-hidden bg-slate-950 flex-shrink-0 border border-slate-800">
                           <img
                             src={item.imageUrl || "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=300"}
@@ -227,11 +227,11 @@ function RestaurantContent() {
                           />
                           <button
                             onClick={() => setActiveDishFor3D(item)}
-                            className="absolute bottom-1 right-1 px-2 py-1 bg-slate-950/80 backdrop-blur-md rounded-lg text-[10px] font-bold text-amber-400 flex items-center space-x-1 border border-slate-700"
-                            title="Inspect in 3D"
+                            className="absolute bottom-1 right-1 px-2 py-1 bg-slate-950/80 backdrop-blur-md rounded-lg text-[10px] font-bold text-amber-400 flex items-center space-x-1 border border-slate-700 hover:bg-slate-900"
+                            title="Inspect Portion"
                           >
                             <Eye className="w-3 h-3" />
-                            <span>3D</span>
+                            <span>View</span>
                           </button>
                         </div>
                       </div>
@@ -241,7 +241,7 @@ function RestaurantContent() {
                           href={`/dish/${item.id}`}
                           className="text-xs text-indigo-400 hover:underline font-medium"
                         >
-                          View 3D Portions &amp; Nutrition →
+                          View Portions &amp; Nutrition →
                         </Link>
 
                         <button
