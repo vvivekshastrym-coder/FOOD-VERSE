@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
+import UnifiedAppDock from "@/components/layout/UnifiedAppDock";
 
 export const metadata: Metadata = {
   title: "FoodVerse | See your food before you order it",
@@ -22,8 +23,15 @@ export default function RootLayout({
         <Suspense fallback={<div className="h-16 bg-slate-950 border-b border-slate-800" />}>
           <Navbar />
         </Suspense>
-        <main className="flex-1">{children}</main>
-        <footer className="border-t border-slate-900 bg-slate-950 py-8 text-center text-xs text-slate-500">
+        
+        <main className="flex-1 pb-16">{children}</main>
+
+        {/* Unified One-App View Switcher Bar */}
+        <Suspense fallback={null}>
+          <UnifiedAppDock />
+        </Suspense>
+
+        <footer className="border-t border-slate-900 bg-slate-950 py-8 text-center text-xs text-slate-500 mb-12">
           <div className="max-w-7xl mx-auto px-4 space-y-2">
             <p className="font-semibold text-slate-400">FoodVerse Technologies India Pvt. Ltd. • Bengaluru, Karnataka</p>
             <p>100% True-Size Verified Portions • FSSAI Licensed Partners • Authentic Kitchen-to-Door Tracking</p>
